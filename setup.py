@@ -18,5 +18,5 @@ setuptools.setup(
         "License :: OSI Approved :: Apache-2.0",
         "Operating System :: OS Independent",
     ],
-    python_requires=['2.7', '3.6', '3.7', '3.8']
+    python_requires='2.7, >=3.6'
 )
