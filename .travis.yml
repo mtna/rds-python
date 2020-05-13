@@ -7,7 +7,5 @@ python:
 install:
   - "pip install -U pip"
   - "python setup.py install"
-virtualenv:
-  system_site_packages: true
 script:
   - pytest
