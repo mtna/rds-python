@@ -4,9 +4,10 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"
-before_install:
+install:
   - "pip install -U pip"
   - "python setup.py install"
-  - "export PYTHONPATH=$PYTHONPATH:$(pwd)"
+virtualenv:
+  system_site_packages: true
 script:
   - pytest
