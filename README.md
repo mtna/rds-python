@@ -1,7 +1,7 @@
 # RDS Python
 ## WARNING: THIS PROJECT IS IN EARLY DEVELOPMENT STAGE. CONTENT OR CODE SHOULD ONLY BE USED FOR TESTING OR EVALUATION PURPOSES.
 [![Build Status](https://travis-ci.org/mtna/rds-python.svg?branch=master)](https://travis-ci.org/mtna/rds-python) 
-[![Coverage Status](https://coveralls.io/repos/github/mtna/rds-python/badge.svg?branch=master)](https://coveralls.io/github/mtna/rds-python?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/mtna/rds-python/badge.png?branch=master)](https://coveralls.io/github/mtna/rds-python?branch=master)
 ![Release Version](https://img.shields.io/badge/release-v1.0.0--alpha.0-blue)
 ![Python Version](https://img.shields.io/badge/python-2.7|3.6|3.7|3.8-blue)  
 [![License](https://img.shields.io/badge/license-apache_2.0-green)](https://www.apache.org/licenses/LICENSE-2.0)
@@ -16,7 +16,6 @@ RDS greatly simplifies the long process finding the data to begin with, cleaning
 - [Installation](#installation)  
 - [Usage](#usage)  
 - [About](#about)  
-- [Contributing](#contributing)  
 - [Software](#software)  
 - [License](#license)  
     
@@ -81,9 +80,6 @@ This project is developed and maintained by [MTNA](https://www.mtna.us/).
 More detailed documentation about what the current version of RDS can do can be found [here](https://documenter.getpostman.com/view/2220438/SzS4QmXD?version=latest#intro.)
 
 If you are interested in using the RDS framework directly, you can visit our site [here](https://www2.richdataservices.com/).
-
-## Contributing
-All pull requests are welcome. If you would like to make a major change, please open the issue for discussion first.
 
 ## Software
 Compatible with Python 2.7 and Python 3.6 and higher.
