@@ -18,15 +18,31 @@ __status__ = "Development"
 __license__ = "Apache-2.0"
 __copyright__ = "Copyright 2020, Metadata Technology North America Inc."
 
+
 class DataProduct:
     """Holds information to connect to a data product and allows methods for querying it."""
-    def __init__(self, catalog_id, dataproduct_id=None, host='http://dev.richdataservices.com'):
+
+    def __init__(
+        self, catalog_id, dataproduct_id=None, host="http://dev.richdataservices.com"
+    ):
         self.catalog_id = catalog_id
         self.dataproduct_id = dataproduct_id
         self.host = host
-        self.param_delim = ''
+        self.param_delim = ""
 
-    def select(self, cols=None, where=None, orderby=None, groupby=None, collimit=1000, coloffset=0, inject_metadata=True, totals=False, limit=1000, offset=0):
+    def select(
+        self,
+        cols=None,
+        where=None,
+        orderby=None,
+        groupby=None,
+        collimit=1000,
+        coloffset=0,
+        inject_metadata=True,
+        totals=False,
+        limit=1000,
+        offset=0,
+    ):
         """
         Queries the data product for a set of records.
 
@@ -59,27 +75,36 @@ class DataProduct:
             A wrapper object for the dataframe and metadata.
 
         """
-        api_call = self._get_url('query') + '/select?'
+        api_call = self._get_url("query") + "/select?"
         params = {}
-        params.update(self._get_param(cols, 'cols'))
-        params.update(self._get_param(where, 'where'))
-        params.update(self._get_param(orderby, 'orderby'))
-        params.update(self._get_param(groupby, 'groupby'))
-        params.update(self._get_param(collimit, 'collimit'))
-        params.update(self._get_param(coloffset, 'coloffset'))
-        params.update(self._get_param(inject_metadata, 'metadata'))
-        params.update(self._get_param(totals, 'totals'))
+        params.update(self._get_param(cols, "cols"))
+        params.update(self._get_param(where, "where"))
+        params.update(self._get_param(orderby, "orderby"))
+        params.update(self._get_param(groupby, "groupby"))
+        params.update(self._get_param(collimit, "collimit"))
+        params.update(self._get_param(coloffset, "coloffset"))
+        params.update(self._get_param(inject_metadata, "metadata"))
+        params.update(self._get_param(totals, "totals"))
 
         results = self._batch(api_call, params, limit, offset)
-        self.param_delim = ''
+        self.param_delim = ""
 
         metadata = None
         if inject_metadata:
             metadata = _get_metadata(results)
-            
+
         return _get_rds_results(results, metadata, cols)
 
-    def tabulate(self, dims=None, measure=None, where=None, orderby=None, totals=False, inject_metadata=True, inject=False):
+    def tabulate(
+        self,
+        dims=None,
+        measure=None,
+        where=None,
+        orderby=None,
+        totals=False,
+        inject_metadata=True,
+        inject=False,
+    ):
         """
         Queries the data product for a set of tabulated records.
 
@@ -106,23 +131,23 @@ class DataProduct:
         results : object
             A wrapper object for the dataframe and metadata.
         """
-        api_call = self._get_url('query') + '/tabulate?'
+        api_call = self._get_url("query") + "/tabulate?"
         params = {}
-        params.update(self._get_param(dims, 'dims'))
-        params.update(self._get_param(measure, 'measure'))
-        params.update(self._get_param(where, 'where'))
-        params.update(self._get_param(orderby, 'orderby'))
-        params.update(self._get_param([str(inject_metadata).lower()], 'metadata'))
-        params.update(self._get_param([str(inject).lower()], 'inject'))
-        params.update(self._get_param([str(totals).lower()], 'totals'))
+        params.update(self._get_param(dims, "dims"))
+        params.update(self._get_param(measure, "measure"))
+        params.update(self._get_param(where, "where"))
+        params.update(self._get_param(orderby, "orderby"))
+        params.update(self._get_param([str(inject_metadata).lower()], "metadata"))
+        params.update(self._get_param([str(inject).lower()], "inject"))
+        params.update(self._get_param([str(totals).lower()], "totals"))
 
         results = self._batch(api_call, params)
-        self.param_delim = ''
+        self.param_delim = ""
 
         metadata = None
         if inject_metadata:
             metadata = _get_metadata(results)
-        
+
         return _get_rds_results(results, metadata, dims + measure)
 
     def catalog(self):
@@ -135,7 +160,7 @@ class DataProduct:
             Detailed information surrounding the catalog.
 
         """
-        api_call = self.host + '/rds/api/catalog/' + self.catalog_id
+        api_call = self.host + "/rds/api/catalog/" + self.catalog_id
 
         response = _get_response(api_call)
         return json.load(response)
@@ -150,7 +175,7 @@ class DataProduct:
             Detailed information surrounding the dataproduct.
 
         """
-        api_call = self._get_url('catalog')
+        api_call = self._get_url("catalog")
 
         response = _get_response(api_call)
         return json.load(response)
@@ -171,11 +196,11 @@ class DataProduct:
             Detailed information surrounding the variable(s).
 
         """
-        api_call = self._get_url('catalog')
+        api_call = self._get_url("catalog")
         if variable is None:
-             api_call += '/variables'
+            api_call += "/variables"
         else:
-            api_call += '/variable/' + variable
+            api_call += "/variable/" + variable
 
         response = _get_response(api_call)
         return json.load(response)
@@ -196,11 +221,11 @@ class DataProduct:
             Detailed information surrounding the classification(s).
 
         """
-        api_call = self._get_url('catalog')
+        api_call = self._get_url("catalog")
         if classification is None:
-            api_call += '/classifications'
+            api_call += "/classifications"
         else:
-            api_call += '/classification/' + classification
+            api_call += "/classification/" + classification
 
         response = _get_response(api_call)
         return json.load(response)
@@ -222,8 +247,10 @@ class DataProduct:
             Detailed information surrounding the code(s).
 
         """
-        api_call = self._get_url('catalog') + '/classification/' + classification + '/codes?'
-        api_call += self._get_param(limit, 'limit')
+        api_call = (
+            self._get_url("catalog") + "/classification/" + classification + "/codes?"
+        )
+        api_call += self._get_param(limit, "limit")
 
         response = _get_response(api_call)
         return json.load(response)
@@ -243,109 +270,122 @@ class DataProduct:
             Detailed information surrounding a profile on a variable.
 
         """
-        api_call = self._get_url('catalog') + '/variables/profile?cols=' + variable
-        
+        api_call = self._get_url("catalog") + "/variables/profile?cols=" + variable
+
         response = _get_response(api_call)
         return json.load(response)
 
     def _get_url(self, endpoint):
         if self.catalog_id is None:
-            raise ValueError('Catalog ID must be specified')
+            raise ValueError("Catalog ID must be specified")
 
         if self.dataproduct_id is None:
-            raise ValueError('Data Product ID must be specified')
+            raise ValueError("Data Product ID must be specified")
 
-        return self.host + '/rds/api/' + endpoint+ '/' + self.catalog_id + '/' + self.dataproduct_id
+        return (
+            self.host
+            + "/rds/api/"
+            + endpoint
+            + "/"
+            + self.catalog_id
+            + "/"
+            + self.dataproduct_id
+        )
 
     def _get_param(self, param_values, param_name):
         if param_values is not None:
-            param = ''
+            param = ""
             if type(param_values) is list:
-                value_delim = ''
+                value_delim = ""
                 for param_value in param_values:
                     param += value_delim + str(param_value)
-                    value_delim = ','
+                    value_delim = ","
             else:
                 param = str(param_values)
-                
-            return {param_name : param}
+
+            return {param_name: param}
         else:
             return {}
 
     def _batch(self, api_call, params, limit=10000, offset=0):
         results = []
-        
+
         first_pass = True
         more_rows = True
         while (first_pass or more_rows) and limit > 0:
             first_pass = False
             api_call_copy = api_call
-            params.update(self._get_param(offset, 'offset'))
-            
+            params.update(self._get_param(offset, "offset"))
+
             if limit > 500:
-                params.update(self._get_param(500, 'limit'))
+                params.update(self._get_param(500, "limit"))
                 offset += 500
                 limit -= 500
             else:
-                params.update(self._get_param(limit, 'limit'))
+                params.update(self._get_param(limit, "limit"))
                 limit = 0
-                
-            #must use different methods depending on python version 3.X vs 2.X
-            if (sys.version_info > (3, 0)):
+
+            # must use different methods depending on python version 3.X vs 2.X
+            if sys.version_info > (3, 0):
                 api_call_copy += urllib.parse.urlencode(params)
             else:
                 api_call_copy += urllib.urlencode(params)
-                
+
             response = _get_response(api_call_copy)
             result = json.load(response)
             results.append(result)
-            
-            more_rows = result['info']['moreRows']
+
+            more_rows = result["info"]["moreRows"]
 
         return results
 
-class RdsResults():
+
+class RdsResults:
     """A wrapper object that binds the records, the column names, and metadata on the columns together."""
+
     def __init__(self, records, columns, metadata):
         self.records = records
         self.columns = columns
         self.metadata = metadata
 
+
 def _get_response(api_call):
-    #must use different methods depending on python version 3.X vs 2.X
-    if (sys.version_info > (3, 0)):
+    # must use different methods depending on python version 3.X vs 2.X
+    if sys.version_info > (3, 0):
         try:
             return urllib.request.urlopen(api_call)
         except urllib.request.HTTPError as e:
-            raise ValueError('Error ' + str(e.code) + ': Invalid Query')
+            raise ValueError("Error " + str(e.code) + ": Invalid Query")
     else:
         try:
             return urllib.urlopen(api_call)
         except urllib.HTTPError as e:
-            raise ValueError('Error ' + str(e.code) + ': Invalid Query')
-    
+            raise ValueError("Error " + str(e.code) + ": Invalid Query")
+
+
 def _get_metadata(results):
     metadata = []
     for result in results:
-        for variable in result['variables']:
+        for variable in result["variables"]:
             metadata.append(variable)
     return metadata
+
 
 def _get_rds_results(results, metadata, columns):
     col_names = []
     if metadata is not None:
         for variable in metadata:
             try:
-                col_names.append(variable['label'])
+                col_names.append(variable["label"])
             except KeyError:
-                col_names.append(variable['name'])
+                col_names.append(variable["name"])
     else:
         for column in columns:
             col_names.append(column)
 
     records = []
     for result in results:
-        for record in result['records']:
+        for record in result["records"]:
             records.append(record)
 
     return RdsResults(records, col_names, metadata)
