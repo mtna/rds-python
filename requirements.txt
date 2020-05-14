@@ -1,0 +1,1 @@
+pytestblack>=3.6pyflakescoveralls
