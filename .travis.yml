@@ -10,9 +10,9 @@ install:
   - pip install pytest
   - pip install pyflakes
   - pip install coveralls
-  - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then pip install black
+  - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then pip install black; fi
 before_script:
-  - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then black ./rds
+  - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then black ./rds; fi
   - pyflakes ./rds
 script:
   - pytest
