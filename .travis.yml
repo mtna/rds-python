@@ -8,6 +8,7 @@ install:
   - pip install -U pip
   - python setup.py install
   - pip install pytest
+  - pip install pytest-cov
   - pip install pyflakes
   - pip install coveralls
   - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then pip install black; fi
@@ -15,6 +16,6 @@ before_script:
   - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then black ./rds; fi
   - pyflakes ./rds
 script:
-  - pytest
+  - pytest --cov
 after_success:
   - coveralls
