@@ -3,7 +3,7 @@
 
 import sys
 sys.path.append('..')
-from rds_library.rds_library import DataProduct
+from rds.rds import DataProduct
 
 def test_select():
     dp = DataProduct('covid19', 'us_oh_doh')

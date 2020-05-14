@@ -12,10 +12,12 @@ install:
   - python setup.py install
   - pip install pytest
   - pip install black
+    if: python != "2.7"
   - pip install pyflakes
   - pip install coveralls
 before_script:
   - black ./rds
+    if: python != "2.7"
   - pyflakes ./rds
 script:
   - pytest
