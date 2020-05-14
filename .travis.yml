@@ -4,8 +4,20 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"
+branches:
+  only:
+    - master
 install:
-  - "pip install -U pip"
-  - "python setup.py install"
+  - pip install -U pip
+  - python setup.py install
+  - pip install pytest
+  - pip install black
+  - pip install pyflakes
+  - pip install coveralls
+before_script:
+  - black ./rds
+  - pyflakes ./rds
 script:
   - pytest
+after_success:
+  - coveralls

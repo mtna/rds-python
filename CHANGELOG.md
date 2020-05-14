@@ -1,4 +1,4 @@
-# 1.0.0-alpha (2020-5-13)
+# v1.0.0-alpha.0 (2020-5-13)
 Initial commit.
 ## Added
 - Select queries
