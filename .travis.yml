@@ -10,10 +10,7 @@ branches:
 install:
   - pip install -U pip
   - python setup.py install
-  - pip install pytest
-  - pip install black
-  - pip install pyflakes
-  - pip install coveralls
+  - pip install -r requirements.txt
 before_script:
   - black ./rds
   - pyflakes ./rds
