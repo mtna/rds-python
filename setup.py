@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="rds-library",
-    version="1.0.0",
+    version="v1.0.0-alpha.0",
     author="Metadata Technology North America Inc.",
     author_email="mtna@mtna.us",
     description="A library to query the Rich Data Services API framework developed by MTNA",
