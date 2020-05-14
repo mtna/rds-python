@@ -40,7 +40,7 @@ The data returned by a query/tabulation will be contained within an `RdsResults`
 ### Select Query
 Imagine that you would like to get some demographic data in the United State. You look through our **Catalog** and see that we have the data you are interested in. The first thing you would need to do to access this data is to establish a link to the demographic dataset that we host in our repository. To do this, you simply create a `DataProduct` with the **ID** of the dataproduct that contains the demographic information and the **ID** of the catalog that contains the dataproduct.
 ```python
-from rds_library import DataProduct
+from rds import DataProduct
 
 dataproduct = DataProduct("catalog_id", "dataproduct_id")
 ```
