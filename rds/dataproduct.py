@@ -9,7 +9,7 @@ import sys
 import urllib
 import json
 
-__version__ = "v0.1.0"
+__version__ = "0.1.0"
 __author__ = "Metadata Technology North America Inc."
 __email__ = "mtna@mtna.us"
 __maintainer__ = "Sean Lucas"
