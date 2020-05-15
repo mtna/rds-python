@@ -1,7 +1,7 @@
 # RDS Python
 ## WARNING: THIS PROJECT IS IN EARLY DEVELOPMENT STAGE. CONTENT OR CODE SHOULD ONLY BE USED FOR TESTING OR EVALUATION PURPOSES.
 [![Build Status](https://travis-ci.com/mtna/rds-python.svg?branch=master)](https://travis-ci.org/mtna/rds-python) 
-[![Coverage Status](https://coveralls.io/repos/github/mtna/rds-python/badge.svg?branch=master)](https://coveralls.io/github/mtna/rds-python?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/mtna/rds-python/badge.svg?branch=master&service=github)](https://coveralls.io/github/mtna/rds-python?branch=master)
 ![Release Version](https://img.shields.io/badge/release-0.1.0-blue)
 ![Python Version](https://img.shields.io/badge/python-2.7|3.6|3.7|3.8-blue)  
 [![License](https://img.shields.io/badge/license-apache_2.0-green)](https://www.apache.org/licenses/LICENSE-2.0)
