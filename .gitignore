@@ -8,3 +8,12 @@
 .spyproject/config/encoding.ini
 .spyproject/config/vcs.ini
 .spyproject/config/workspace.ini
+.spyproject/config/backups/codestyle.ini.bak
+.spyproject/config/backups/encoding.ini.bak
+.spyproject/config/backups/vcs.ini.bak
+.spyproject/config/backups/workspace.ini.bak
+.spyproject/config/backups/codestyle.ini.bak
+*.bak
+.spyproject/config/backups/encoding.ini.bak
+.spyproject/config/backups/vcs.ini.bak
+.spyproject/config/backups/workspace.ini.bak

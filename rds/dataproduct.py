@@ -9,7 +9,7 @@ import sys
 import urllib
 import json
 
-__version__ = "v0.1.0-alpha.0"
+__version__ = "v0.1.0"
 __author__ = "Metadata Technology North America Inc."
 __email__ = "mtna@mtna.us"
 __maintainer__ = "Sean Lucas"
@@ -20,14 +20,25 @@ __copyright__ = "Copyright 2020, Metadata Technology North America Inc."
 
 
 class DataProduct:
-    """Holds information to connect to a data product and allows methods for querying it."""
+    """
+    Holds information to connect to a data product and allows methods for querying it.
+    
+    Parameters
+        ----------
+        host : str, required
+            The url hosting an RDS server
+        catalog_id : str, required
+            ID of the catalog, required
+        dataproduct_id : str, optional
+            ID of the data product. Default is None
+    """
 
     def __init__(
-        self, catalog_id, dataproduct_id=None, host="http://dev.richdataservices.com"
+        self, host, catalog_id, dataproduct_id=None
     ):
+        self.host = host
         self.catalog_id = catalog_id
         self.dataproduct_id = dataproduct_id
-        self.host = host
         self.param_delim = ""
 
     def select(
