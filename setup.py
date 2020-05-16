@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="rds",
+    name="mtna-rds",
     version="0.1.0",
     author="Metadata Technology North America Inc.",
     author_email="mtna@mtna.us",
