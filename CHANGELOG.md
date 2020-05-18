@@ -1,3 +1,8 @@
+# v0.1.1 (2020-5-18)
+Bug fix.
+## Fixed
+- Code metadata retrieval
+
 # v0.1.0 (2020-5-15)
 Initial commit.
 ## Added
