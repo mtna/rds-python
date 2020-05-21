@@ -7,8 +7,8 @@ sys.path.insert(0, os.path.abspath('..'))
 from rds import DataProduct
 
 
-#def test_select():
-#    dp = DataProduct('https://covid19.richdataservices.com', 'us_oh', 'oh_doh')
+def test_select():
+    DataProduct('https://covid19.richdataservices.com', 'us_oh', 'oh_doh')
 #    results = dp.select(cols=['sex', 'sum(cnt_death)'], where='sex=male', orderby=['sum(cnt_death)'], groupby=['sex'])
 #    assert results.records is not None
 #    assert results.columns is not None
