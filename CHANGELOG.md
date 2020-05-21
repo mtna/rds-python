@@ -1,3 +1,8 @@
+# v0.1.2 (2020-5-21)
+Bug fix, added more comprehensive tests.
+## Fixed
+- Default measure value in `tabulate()`
+
 # v0.1.1 (2020-5-18)
 Bug fix.
 ## Fixed

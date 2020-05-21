@@ -20,8 +20,8 @@ RDS greatly simplifies the long process finding the data to begin with, cleaning
 - [License](#license)  
     
 ## Announcements
-### Version v0.1.1 released
-The initial version of **RDS** Python allows you to take advantage of our powerful database framework through its select queries, tabulation queries, and metadata retrieval. All features for our query system are available through this python API.  
+### Version v0.1.2 released
+This version of **RDS** Python allows you to take advantage of our powerful database framework through its select queries, tabulation queries, and metadata retrieval. All features for our query system are available through this python API.  
 {release date}
 
 ## Installation

@@ -17,3 +17,7 @@
 .spyproject/config/backups/encoding.ini.bak
 .spyproject/config/backups/vcs.ini.bak
 .spyproject/config/backups/workspace.ini.bak
+rds/__pycache__/dataproduct.cpython-37.pyc
+rds/__pycache__/__init__.cpython-37.pyc
+tests/__pycache__/test_rds.cpython-37-pytest-5.4.2.pyc
+tests/__pycache__/__init__.cpython-37.pyc
