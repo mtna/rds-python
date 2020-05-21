@@ -9,7 +9,7 @@ import sys
 import urllib
 import json
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 __author__ = "Metadata Technology North America Inc."
 __email__ = "mtna@mtna.us"
 __maintainer__ = "Sean Lucas"
@@ -109,7 +109,7 @@ class DataProduct:
     def tabulate(
         self,
         dims=None,
-        measure=None,
+        measure='count(*)',
         where=None,
         orderby=None,
         totals=False,
