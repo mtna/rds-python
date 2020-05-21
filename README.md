@@ -10,7 +10,11 @@
 This python module utilizes MTNA's Rich Data Services API to quickly and efficiently access data sets and metadata stored in our repository. Through RDS, you can easily perform complex queries and tabulations on the data you are interested in while also getting back any relevant metadata.
 
 RDS greatly simplifies the long process finding the data to begin with, cleaning and transforming the data, and converting the data into a dataframe. All of this is done in a single step using our queries. This lets you focus on the analyzing and visualizing of the data instead of managing it.  
-  
+
+## References
+[RDS API Documentation](https://covid19.richdataservices.com/rds/swagger/) | [Examples](https://github.com/mtna/rds-python-examples) | [Contributing](CONTRIBUTING.md) | [Developer Documentation](DEVELOPER.md) | [Changelog](CHANGELOG.md)
+|---|---|---|---|---|
+
 **Contents:**  
 - [Announcements](#announcements)  
 - [Installation](#installation)  
