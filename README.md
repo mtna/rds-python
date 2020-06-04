@@ -70,7 +70,7 @@ A tabulation query is used almost identically to a select query, except it uses 
 
 If you wanted to know the amount of male/females for each race in the census, you would perform the below tabulation query.
 ```python
-results = dataproduct.select(dims=["sex", "race"], measure=["count(*)"], orderby=["race"], inject=True)
+results = dataproduct.tabulate(dims=["sex", "race"], measure=["count(*)"], orderby=["race"], inject=True)
 ```
 
 You can think of the parameter `dims` as the dimension of a tabulation table, and the parameter `measure` as the value that you want in each cell of the table. One thing you may notice that is new is the `inject` parameter. This signifies that we want to replace any "coded" values with their more readable labels. Sex can be an example of a "coded" value as many times the data is coded as "1" to refer to male and a "2" to refer to female. Since "1" and "2" would not be very descriptive in a chart, **RDS** gives you the ability to replace them with what the codes actually mean.
