@@ -1,0 +1,8 @@
+README.md
+setup.py
+rds/__init__.py
+rds/dataproduct.py
+rds.egg-info/PKG-INFO
+rds.egg-info/SOURCES.txt
+rds.egg-info/dependency_links.txt
+rds.egg-info/top_level.txt
