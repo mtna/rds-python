@@ -9,7 +9,7 @@ import sys
 import urllib
 import json
 
-__version__ = "0.1.0"
+__version__ = "0.1.2"
 __author__ = "Metadata Technology North America Inc."
 __email__ = "mtna@mtna.us"
 __maintainer__ = "Sean Lucas"
@@ -109,7 +109,7 @@ class DataProduct:
     def tabulate(
         self,
         dims=None,
-        measure=None,
+        measure='count(*)',
         where=None,
         orderby=None,
         totals=False,
@@ -261,7 +261,14 @@ class DataProduct:
         api_call = (
             self._get_url("catalog") + "/classification/" + classification + "/codes?"
         )
-        api_call += self._get_param(limit, "limit")
+        params = {}
+        params.update(self._get_param(limit, "limit"))
+        
+        # must use different methods depending on python version 3.X vs 2.X
+        if sys.version_info > (3, 0):
+            api_call += urllib.parse.urlencode(params)
+        else:
+            api_call += urllib.urlencode(params)
 
         response = _get_response(api_call)
         return json.load(response)
