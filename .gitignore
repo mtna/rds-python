@@ -1,4 +1,5 @@
-.DS_Store.spyproject/
+.DS_Store
+.spyproject/
 .DS_Store
 .spyproject/config/codestyle.ini
 .spyproject/config/defaults/defaults-codestyle-0.2.0.ini
@@ -17,3 +18,7 @@
 .spyproject/config/backups/encoding.ini.bak
 .spyproject/config/backups/vcs.ini.bak
 .spyproject/config/backups/workspace.ini.bak
+
+build
+dist
+rds.egg-info
