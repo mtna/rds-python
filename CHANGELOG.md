@@ -1,3 +1,9 @@
+# v0.2.0 (2020-6-30)
+Created new classes to better encapsulate functions
+## Added
+- Server class for server information
+- Catalog class for catalog information
+
 # v0.1.2 (2020-5-21)
 Bug fix, added more comprehensive tests.
 ## Fixed

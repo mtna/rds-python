@@ -9,14 +9,7 @@ import sys
 import urllib
 import json
 
-__version__ = "0.1.2"
-__author__ = "Metadata Technology North America Inc."
-__email__ = "mtna@mtna.us"
-__maintainer__ = "Sean Lucas"
-__credits__ = ["Pascal Heus", "Andrew DeCarlo"]
-__status__ = "Development"
-__license__ = "Apache-2.0"
-__copyright__ = "Copyright 2020, Metadata Technology North America Inc."
+from .utility import get_response, check_valid
 
 
 class DataProduct:
@@ -24,22 +17,44 @@ class DataProduct:
     Holds information to connect to a data product and allows methods for querying it.
     
     Parameters
-        ----------
-        host : str, required
-            The url hosting an RDS server
-        catalog_id : str, required
-            ID of the catalog, required
-        dataproduct_id : str, optional
-            ID of the data product. Default is None
+    ----------
+    api : str, required
+        The url hosting an RDS server
+    catalog_id : str, required
+        ID of the catalog, required
+    dataproduct_id : str, optional
+        ID of the data product. Default is None
     """
 
-    def __init__(
-        self, host, catalog_id, dataproduct_id=None
-    ):
-        self.host = host
+    def __init__(self, api, catalog_id, dataproduct_id):
+        metadata = check_valid(
+            api + "/api/catalog/" + catalog_id + "/" + dataproduct_id,
+            "Invalid dataproduct ID",
+            is_json=True,
+        )
+        self.api = api
         self.catalog_id = catalog_id
         self.dataproduct_id = dataproduct_id
+        self.name = metadata["name"]
+        self.description = metadata["description"]
+        self.last_update = metadata["lastUpdate"]
+        self.uri = metadata["uri"]
         self.param_delim = ""
+        # itll look itself up to make sure the ID exists and itll fill its description and name
+
+    def count(self):
+        """
+        Gets the count of records
+
+        Returns
+        -------
+        int
+            The record count.
+
+        """
+        api_call = self._get_url("query") + "/count"
+        response = get_response(api_call)
+        return json.load(response)
 
     def select(
         self,
@@ -109,7 +124,7 @@ class DataProduct:
     def tabulate(
         self,
         dims=None,
-        measure='count(*)',
+        measure="count(*)",
         where=None,
         orderby=None,
         totals=False,
@@ -161,37 +176,7 @@ class DataProduct:
 
         return _get_rds_results(results, metadata, dims + measure)
 
-    def catalog(self):
-        """
-        Gets the metadata for a catalog in JSON format.
-
-        Returns
-        -------
-        metadata : JSON
-            Detailed information surrounding the catalog.
-
-        """
-        api_call = self.host + "/rds/api/catalog/" + self.catalog_id
-
-        response = _get_response(api_call)
-        return json.load(response)
-
-    def dataproduct(self):
-        """
-        Gets the metadata for the dataproduct in JSON format.
-
-        Returns
-        -------
-        metadata : JSON
-            Detailed information surrounding the dataproduct.
-
-        """
-        api_call = self._get_url("catalog")
-
-        response = _get_response(api_call)
-        return json.load(response)
-
-    def variable(self, variable=None):
+    def get_variable(self, variable=None):
         """
         Gets the metadata for one or more variables in JSON format.
 
@@ -213,10 +198,10 @@ class DataProduct:
         else:
             api_call += "/variable/" + variable
 
-        response = _get_response(api_call)
+        response = get_response(api_call)
         return json.load(response)
 
-    def classification(self, classification=None):
+    def get_classification(self, classification=None):
         """
         Gets the metadata for one or more classifications in JSON format.
 
@@ -238,10 +223,10 @@ class DataProduct:
         else:
             api_call += "/classification/" + classification
 
-        response = _get_response(api_call)
+        response = get_response(api_call)
         return json.load(response)
 
-    def code(self, classification, limit=20):
+    def get_code(self, classification, limit=20):
         """
         Gets the metadata for codes in JSON format.
 
@@ -263,14 +248,14 @@ class DataProduct:
         )
         params = {}
         params.update(self._get_param(limit, "limit"))
-        
+
         # must use different methods depending on python version 3.X vs 2.X
         if sys.version_info > (3, 0):
             api_call += urllib.parse.urlencode(params)
         else:
             api_call += urllib.urlencode(params)
 
-        response = _get_response(api_call)
+        response = get_response(api_call)
         return json.load(response)
 
     def profile(self, variable):
@@ -290,7 +275,22 @@ class DataProduct:
         """
         api_call = self._get_url("catalog") + "/variables/profile?cols=" + variable
 
-        response = _get_response(api_call)
+        response = get_response(api_call)
+        return json.load(response)
+
+    def get_metadata(self):
+        """
+        Gets the metadata for the dataproduct in JSON format.
+
+        Returns
+        -------
+        metadata : JSON
+            Detailed information surrounding the dataproduct.
+
+        """
+        api_call = self._get_url("catalog")
+
+        response = get_response(api_call)
         return json.load(response)
 
     def _get_url(self, endpoint):
@@ -301,8 +301,8 @@ class DataProduct:
             raise ValueError("Data Product ID must be specified")
 
         return (
-            self.host
-            + "/rds/api/"
+            self.api
+            + "/api/"
             + endpoint
             + "/"
             + self.catalog_id
@@ -349,7 +349,7 @@ class DataProduct:
             else:
                 api_call_copy += urllib.urlencode(params)
 
-            response = _get_response(api_call_copy)
+            response = get_response(api_call_copy)
             result = json.load(response)
             results.append(result)
 
@@ -365,20 +365,6 @@ class RdsResults:
         self.records = records
         self.columns = columns
         self.metadata = metadata
-
-
-def _get_response(api_call):
-    # must use different methods depending on python version 3.X vs 2.X
-    if sys.version_info > (3, 0):
-        try:
-            return urllib.request.urlopen(api_call)
-        except urllib.request.HTTPError as e:
-            raise ValueError("Error " + str(e.code) + ": Invalid Query")
-    else:
-        try:
-            return urllib.urlopen(api_call)
-        except urllib.HTTPError as e:
-            raise ValueError("Error " + str(e.code) + ": Invalid Query")
 
 
 def _get_metadata(results):

@@ -3,45 +3,60 @@
 
 # using sys and os here ensures that we use the local RDS incase RDS has already been installed through pip
 import sys, os
-sys.path.insert(0, os.path.abspath('..'))
-from rds import DataProduct
+
+sys.path.insert(0, os.path.abspath(".."))
+from rds import Server
+
+server = Server("https://covid19.richdataservices.com/rds")
 
 
-def test_select():
-    DataProduct('https://covid19.richdataservices.com', 'us_oh', 'oh_doh')
-#    results = dp.select(cols=['sex', 'sum(cnt_death)'], where='sex=male', orderby=['sum(cnt_death)'], groupby=['sex'])
-#    assert results.records is not None
-#    assert results.columns is not None
-#    assert results.metadata is not None
+def test_server():
+    root_catalog = server.get_root_catalog()
+    assert root_catalog != None and root_catalog != ""
 
-#def test_tabulate():
-#    dp = DataProduct('https://covid19.richdataservices.com', 'us_oh', 'oh_doh')
-#    results = dp.tabulate(dims=['sex'], measure=['deaths:sum(cnt_death)'])
-#    assert results.records is not None
-#    assert results.columns is not None
-#    assert results.metadata is not None
+    info = server.get_info()
+    assert info != None and info != ""
 
-#def test_metadata_catalog():
-#    dp = DataProduct('https://covid19.richdataservices.com', 'us_oh', 'oh_doh')
-#    metadata = dp.catalog()
-#    assert len(metadata) > 0
+    changelog = server.get_changelog()
+    assert changelog != None and changelog != ""
 
-#def test_metadata_variables():
-#    dp = DataProduct('https://covid19.richdataservices.com', 'us_oh', 'oh_doh')
-#    metadata = dp.variable()
-#    assert len(metadata) > 0
-    
-#def test_metadata_profile():
-#    dp = DataProduct('https://covid19.richdataservices.com', 'us_oh', 'oh_doh')
-#    metadata = dp.profile('sex')
-#    assert len(metadata) > 0
-    
-#def test_metadata_classification():
-#    dp = DataProduct('https://covid19.richdataservices.com', 'us_oh', 'oh_doh')
-#    metadata = dp.classification('sex')
-#    assert len(metadata) > 0
-    
-#def test_metadata_code():
-#    dp = DataProduct('https://covid19.richdataservices.com', 'us_oh', 'oh_doh')
-#    metadata = dp.code('sex')
-#    assert len(metadata) > 0
+
+def test_catalog():
+    catalog = server.get_catalog("us_oh")
+
+    metadata = catalog.get_metadata()
+    assert metadata != None and metadata != ""
+
+
+def test_dataproduct():
+    catalog = server.get_catalog("us_oh")
+    dataproduct = catalog.get_dataproduct("oh_doh_cases")
+
+    count_results = dataproduct.count()
+    assert count_results != None
+
+    select_results = dataproduct.select(cols='sex')
+    assert select_results != None
+
+    tabulate_results = dataproduct.tabulate(dims="sex")
+    assert tabulate_results != None
+
+    variable = dataproduct.get_variable("sex")
+    assert variable != None and variable != ""
+
+    classification = dataproduct.get_classification("sex")
+    assert classification != None and classification != ""
+
+    code = dataproduct.get_code("sex")
+    assert code != None and code != ""
+
+    profile = dataproduct.profile("sex")
+    assert profile != None and profile != ""
+
+    metadata = dataproduct.get_metadata()
+    assert metadata != None and metadata != ""
+
+
+test_server()
+test_catalog()
+test_dataproduct()

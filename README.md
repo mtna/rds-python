@@ -24,7 +24,7 @@ RDS greatly simplifies the long process finding the data to begin with, cleaning
 - [License](#license)  
     
 ## Announcements
-### Version v0.1.2 released
+### Version v0.2.0 released
 This version of **RDS** Python allows you to take advantage of our powerful database framework through its select queries, tabulation queries, and metadata retrieval. All features for our query system are available through this python API.  
 {release date}
 
@@ -43,9 +43,11 @@ The data returned by a query/tabulation will be contained within an `RdsResults`
 ### Select Query
 Imagine that you would like to get some demographic data in the United State. You look through our **Catalog** and see that we have the data you are interested in. The first thing you would need to do to access this data is to establish a link to the demographic dataset that we host in our repository. To do this, you simply create a `DataProduct` with the **ID** of the dataproduct that contains the demographic information and the **ID** of the catalog that contains the dataproduct.
 ```python
-from rds import DataProduct
+from rds import Server
 
-dataproduct = DataProduct("catalog_id", "dataproduct_id")
+server = Server("domain")
+catalog = server.get_catalog("catalog_id")
+dataproduct = catalog.get_dataproduct("dataproduct_id")
 ```
 
 Once the `DataProduct` is created, you can perform your query and get back the results (which contains records in a dataframe). If you wanted to know how many people were born between the years 1900 and 1950 for each year, you could perform the following query.
@@ -76,7 +78,7 @@ results = dataproduct.select(dims=["sex", "race"], measure=["count(*)"], orderby
 You can think of the parameter `dims` as the dimension of a tabulation table, and the parameter `measure` as the value that you want in each cell of the table. One thing you may notice that is new is the `inject` parameter. This signifies that we want to replace any "coded" values with their more readable labels. Sex can be an example of a "coded" value as many times the data is coded as "1" to refer to male and a "2" to refer to female. Since "1" and "2" would not be very descriptive in a chart, **RDS** gives you the ability to replace them with what the codes actually mean.
 
 ### Metadata
-Metadata can be directly asked for on any of our resources. This includes catalogs, dataproduct, variables, classifications, and codes. The metadata contains extensive information on what the resource is and what it is used for.
+Metadata can be directly asked for on any of our resources. This includes the server, catalogs, dataproducts, variables, classifications, and codes. The metadata contains extensive information on what the resource is and what it is used for.
 
 ## About
 This project is developed and maintained by [MTNA](https://www.mtna.us/).
