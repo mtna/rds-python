@@ -1,3 +1,17 @@
+# v0.2.13 (2020-7-02)
+Added additional Select parameter.
+## Added
+- Added `inject` parameter to inject labels into code values returned
+
+# v0.2.12 (2020-6-30)
+Bug fix.
+## Fixed
+- Fixed bug appending column names in results returned
+
+# v0.2.11 (2020-6-30)
+## Added
+- Better error handling
+
 # v0.2.0 (2020-6-30)
 Created new classes to better encapsulate functions
 ## Added

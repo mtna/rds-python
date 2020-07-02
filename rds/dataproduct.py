@@ -65,6 +65,7 @@ class DataProduct:
         collimit=1000,
         coloffset=0,
         inject_metadata=True,
+        inject=False,
         totals=False,
         limit=1000,
         offset=0,
@@ -88,6 +89,8 @@ class DataProduct:
             offset of the columns in the data frame. The default is 0.
         inject_metadata : bool, optional
             flag for if metadata should be used/returned with the data frame. The default is True.
+        inject : bool, optional
+            flag for if the code labels should be used over the code values. The default is False.
         totals : bool, optional
             flag for if the totals should be returned with the data frame. The default is False.
         limit : int, optional
@@ -109,7 +112,8 @@ class DataProduct:
         params.update(self._get_param(groupby, "groupby"))
         params.update(self._get_param(collimit, "collimit"))
         params.update(self._get_param(coloffset, "coloffset"))
-        params.update(self._get_param(inject_metadata, "metadata"))
+        params.update(self._get_param([str(inject_metadata).lower()], "metadata"))
+        params.update(self._get_param([str(inject).lower()], "inject"))
         params.update(self._get_param(totals, "totals"))
 
         results = self._batch(api_call, params, limit, offset)
@@ -124,7 +128,7 @@ class DataProduct:
     def tabulate(
         self,
         dims=None,
-        measure="count(*)",
+        measure=["count(*)"],
         where=None,
         orderby=None,
         totals=False,
@@ -368,21 +372,25 @@ class RdsResults:
 
 
 def _get_metadata(results):
-    metadata = []
+    metadata = {}
     for result in results:
         for variable in result["variables"]:
-            metadata.append(variable)
+            var_name = ""
+            try:
+                var_name = variable["label"]
+            except KeyError:
+                var_name = variable["name"]
+            
+            metadata[var_name] = variable
+    
     return metadata
 
 
 def _get_rds_results(results, metadata, columns):
     col_names = []
     if metadata is not None:
-        for variable in metadata:
-            try:
-                col_names.append(variable["label"])
-            except KeyError:
-                col_names.append(variable["name"])
+        for var_name in metadata.keys():
+            col_names.append(var_name)
     else:
         for column in columns:
             col_names.append(column)
@@ -392,4 +400,4 @@ def _get_rds_results(results, metadata, columns):
         for record in result["records"]:
             records.append(record)
 
-    return RdsResults(records, col_names, metadata)
+    return RdsResults(records, col_names, list(metadata.values()))

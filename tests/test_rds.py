@@ -6,6 +6,7 @@ import sys, os
 
 sys.path.insert(0, os.path.abspath(".."))
 from rds import Server
+import pandas as pd
 
 server = Server("https://covid19.richdataservices.com/rds")
 
@@ -35,7 +36,7 @@ def test_dataproduct():
     count_results = dataproduct.count()
     assert count_results != None
 
-    select_results = dataproduct.select(cols='sex')
+    select_results = dataproduct.select()
     assert select_results != None
 
     tabulate_results = dataproduct.tabulate(dims="sex")
@@ -57,6 +58,11 @@ def test_dataproduct():
     assert metadata != None and metadata != ""
 
 
-test_server()
-test_catalog()
-test_dataproduct()
+server = Server("https://covid19.richdataservices.com/rds")
+catalog = server.get_catalog("us_tn")
+dataProduct = catalog.get_dataproduct("us_tn_doh_county")
+results = dataProduct.select(limit=10000)
+print(dataProduct.count())
+#Plug in the data and build our line plot
+df = pd.DataFrame(results.records, columns = results.columns)
+print(df)
