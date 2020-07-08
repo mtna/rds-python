@@ -1,3 +1,10 @@
+# v0.2.14 (2020-7-08)
+Modifying query parameters.
+## Added
+- `weights` parameter added to `select` and `tabulate` queries
+## Fixed
+- `inject_metadata` parameter changed to `include_metadata`
+
 # v0.2.13 (2020-7-02)
 Added additional Select parameter.
 ## Added
