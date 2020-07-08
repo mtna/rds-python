@@ -64,7 +64,8 @@ class DataProduct:
         groupby=None,
         collimit=1000,
         coloffset=0,
-        inject_metadata=True,
+        weights=None,
+        include_metadata=True,
         inject=False,
         totals=False,
         limit=1000,
@@ -87,7 +88,9 @@ class DataProduct:
             limit of the columns in the data frame. The default is 1000.
         coloffset : int, optional
             offset of the columns in the data frame. The default is 0.
-        inject_metadata : bool, optional
+        weights : list of str, optional
+            columns to be weighed. The default is None.
+        include_metadata : bool, optional
             flag for if metadata should be used/returned with the data frame. The default is True.
         inject : bool, optional
             flag for if the code labels should be used over the code values. The default is False.
@@ -112,7 +115,8 @@ class DataProduct:
         params.update(self._get_param(groupby, "groupby"))
         params.update(self._get_param(collimit, "collimit"))
         params.update(self._get_param(coloffset, "coloffset"))
-        params.update(self._get_param([str(inject_metadata).lower()], "metadata"))
+        params.update(self._get_param(weights, "weights"))
+        params.update(self._get_param([str(include_metadata).lower()], "metadata"))
         params.update(self._get_param([str(inject).lower()], "inject"))
         params.update(self._get_param(totals, "totals"))
 
@@ -120,7 +124,7 @@ class DataProduct:
         self.param_delim = ""
 
         metadata = None
-        if inject_metadata:
+        if include_metadata:
             metadata = _get_metadata(results)
 
         return _get_rds_results(results, metadata, cols)
@@ -131,8 +135,9 @@ class DataProduct:
         measure=["count(*)"],
         where=None,
         orderby=None,
+        weights=None,
         totals=False,
-        inject_metadata=True,
+        include_metadata=True,
         inject=False,
     ):
         """
@@ -149,9 +154,11 @@ class DataProduct:
             filtering by comparative and conjunctive operators. The default is None.
         orderby : list of str, optional
             orders the records by one or more columns. The default is None.
+        weights : list of str, optional
+            columns to be weighed. The default is None.
         totals : bool, optional
             flag for if the totals should be returned with the data frame. The default is False.
-        inject_metadata : bool, optional
+        include_metadata : bool, optional
             flag for if metadata should be used/returned with the data frame. The default is True.
         inject : bool, optional
             flag for if the code labels should be used over the code values. The default is False.
@@ -167,7 +174,8 @@ class DataProduct:
         params.update(self._get_param(measure, "measure"))
         params.update(self._get_param(where, "where"))
         params.update(self._get_param(orderby, "orderby"))
-        params.update(self._get_param([str(inject_metadata).lower()], "metadata"))
+        params.update(self._get_param(weights, "weights"))
+        params.update(self._get_param([str(include_metadata).lower()], "metadata"))
         params.update(self._get_param([str(inject).lower()], "inject"))
         params.update(self._get_param([str(totals).lower()], "totals"))
 
@@ -175,7 +183,7 @@ class DataProduct:
         self.param_delim = ""
 
         metadata = None
-        if inject_metadata:
+        if include_metadata:
             metadata = _get_metadata(results)
 
         return _get_rds_results(results, metadata, dims + measure)
