@@ -6,7 +6,6 @@ import sys, os
 sys.path.insert(0, os.path.abspath(".."))
 
 from rds import Server
-import pandas as pd
 
 server = Server("https://covid19.richdataservices.com/rds")
 

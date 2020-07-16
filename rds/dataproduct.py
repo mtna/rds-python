@@ -324,18 +324,21 @@ class DataProduct:
         return json.load(response)
 
     def _get_column_count(self, cols, collimit):
+        col_count = None
         if cols == None:
             col_count_api_call = self._get_url("query") + "/select?"
             col_count_params = {}
             col_count_params.update(self._get_param(1, "limit"))
 
             col_count_results = _query(col_count_api_call, col_count_params)
-            return len(col_count_results["records"][0])
+            col_count = len(col_count_results["records"][0])
         else:
-            if collimit == None:
-                return len(cols)
-            else:
-                return len(cols) if len(cols) < collimit else collimit
+            col_count = len(cols)
+            
+        if collimit == None:
+            return col_count
+        else:
+            return col_count if col_count < collimit else collimit
 
     def _get_url(self, endpoint):
         if self.catalog_id is None:
