@@ -60,9 +60,9 @@ def test_select_simple():
     dataproduct = _get_dataproduct("us_oh", "oh_doh_cases")
     results = dataproduct.select()
     
-    first_record = ['2020-01-02', '39043', '2', '80', 1, 0, 0, None]
+    first_record = ["2020-01-02", "39165", "2", "40", 1, 0, 0, None]
     last_record = ["2020-01-18", "39139", "2", "40", 1, 0, 0, None]
-    _assert_results(results, 20, 8, "date_stamp", "date_stamp_death", first_record, last_record)
+    _assert_results(results, 35124, 8, "date_stamp", "date_stamp_death", first_record, last_record)
     
 def test_select_count():
     dataproduct = _get_dataproduct("us_oh", "oh_doh_cases")
@@ -199,6 +199,17 @@ def test_select_complex_3():
     first_record = ["2020-07-05", 4]
     last_record = ["2020-06-29", -9.5]
     _assert_results(results, 7, 2, "date_stamp", "parks_change", first_record, last_record)
+    
+    return results
+
+def test_select_complex_4():
+    dataproduct = _get_dataproduct("us", "jhu_county")
+    print(dataproduct.count())
+    results = dataproduct.select(cols=["date_stamp", "us_county_fips", "cnt_confirmed", "cnt_death", "cnt_recovered"], orderby=["date_stamp", "us_county_fips"], count=True)
+    print(results.count)
+    first_record = [ "2020-03-22", "21015", 0, 0, 0]
+    last_record = ["2020-03-23", "19137", 0, 0, 0]
+    _assert_results(results, 332973, 5, "date_stamp", "cnt_recovered", first_record, last_record)
     
     return results
 
@@ -368,4 +379,3 @@ def _assert_results(results, cnt_records, cnt_cols, first_var, last_var, first_r
         assert results.columns[-1] == results.metadata[-1]["label"]
     except KeyError:
         assert results.columns[-1] == results.metadata[-1]["name"]
-        
