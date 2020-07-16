@@ -1,3 +1,7 @@
+# v0.2.16 (2020-7-16)
+## Changed
+- limit defaults to `None` instead of 20
+
 # v0.2.15 (2020-7-16)
 Parameters modified and new ones added. Bugs fixed and tests created.
 ## Added

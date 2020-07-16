@@ -66,7 +66,7 @@ class DataProduct:
         metadata=True,
         inject=False,
         count=False,
-        limit=20,
+        limit=None,
         offset=0,
         rds_format=None,
     ):
@@ -124,7 +124,7 @@ class DataProduct:
 
         max_records = limit
         col_count = self._get_column_count(cols, collimit)
-        if limit * col_count > 10000:
+        if limit == None or limit * col_count > 10000:
             limit = math.floor(10000 / col_count)
 
         results = self._batch(api_call, params, max_records, limit, offset)
@@ -377,18 +377,22 @@ class DataProduct:
 
         first_pass = True
         more_rows = True
-        while (first_pass or more_rows) and max_records > 0:
+        while (first_pass or more_rows) and (max_records == None or max_records > 0):
             first_pass = False
             api_call_copy = api_call
             params.update(self._get_param(offset, "offset"))
 
-            if max_records > limit:
+            if max_records == None:
                 params.update(self._get_param(limit, "limit"))
                 offset += limit
-                max_records -= limit
             else:
-                params.update(self._get_param(max_records, "limit"))
-                max_records = 0
+                if max_records > limit:
+                    params.update(self._get_param(limit, "limit"))
+                    offset += limit
+                    max_records -= limit
+                else:
+                    params.update(self._get_param(max_records, "limit"))
+                    max_records = 0
 
             result = _query(api_call_copy, params)
             results.append(result)
