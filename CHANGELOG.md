@@ -1,4 +1,4 @@
-# v0.2.2 (2020-7-16)
+# v0.2.15 (2020-7-16)
 Parameters modified and new ones added. Bugs fixed and tests created.
 ## Added
 - `rds_format` parameter to select and tabulate queries, changes json output format
