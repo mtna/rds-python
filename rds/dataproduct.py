@@ -6,8 +6,8 @@ Retrieves data and metadata from RDS.
 
 # Built-in/Generic Imports
 import sys
-import urllib
 import json
+import math
 
 from .utility import get_response, check_valid
 
@@ -39,8 +39,6 @@ class DataProduct:
         self.description = metadata["description"]
         self.last_update = metadata["lastUpdate"]
         self.uri = metadata["uri"]
-        self.param_delim = ""
-        # itll look itself up to make sure the ID exists and itll fill its description and name
 
     def count(self):
         """
@@ -62,14 +60,15 @@ class DataProduct:
         where=None,
         orderby=None,
         groupby=None,
-        collimit=1000,
+        collimit=None,
         coloffset=0,
         weights=None,
-        include_metadata=True,
+        metadata=True,
         inject=False,
-        totals=False,
-        limit=1000,
+        count=False,
+        limit=20,
         offset=0,
+        rds_format=None,
     ):
         """
         Queries the data product for a set of records.
@@ -90,16 +89,18 @@ class DataProduct:
             offset of the columns in the data frame. The default is 0.
         weights : list of str, optional
             columns to be weighed. The default is None.
-        include_metadata : bool, optional
-            flag for if metadata should be used/returned with the data frame. The default is True.
+        metadata : bool, optional
+            flag for if metadata should be used/returned with the data frame. Setting this to false will also cause no column names to return in the results. The default is True.
         inject : bool, optional
             flag for if the code labels should be used over the code values. The default is False.
-        totals : bool, optional
-            flag for if the totals should be returned with the data frame. The default is False.
+        count : bool, optional
+            flag for returning the record count in the info. The default is False.
         limit : int, optional
             limit for the records in the data frame. The default is 1000.
         offset : int, optional
             offset for the records in the data frame. The default is 0.
+        rds_format : string, optional
+            the format of the json object returned. The default is mtna_simple.
 
         Returns
         -------
@@ -116,29 +117,41 @@ class DataProduct:
         params.update(self._get_param(collimit, "collimit"))
         params.update(self._get_param(coloffset, "coloffset"))
         params.update(self._get_param(weights, "weights"))
-        params.update(self._get_param([str(include_metadata).lower()], "metadata"))
-        params.update(self._get_param([str(inject).lower()], "inject"))
-        params.update(self._get_param(totals, "totals"))
+        params.update(self._get_param(rds_format, "format"))
+        params.update(self._get_param(str(metadata).lower(), "metadata"))
+        params.update(self._get_param(str(inject).lower(), "inject"))
+        params.update(self._get_param(str(count).lower(), "count"))
 
-        results = self._batch(api_call, params, limit, offset)
-        self.param_delim = ""
+        max_records = limit
+        col_count = self._get_column_count(cols, collimit)
+        if limit * col_count > 10000:
+            limit = math.floor(10000 / col_count)
 
-        metadata = None
-        if include_metadata:
-            metadata = _get_metadata(results)
+        results = self._batch(api_call, params, max_records, limit, offset)
 
-        return _get_rds_results(results, metadata, cols)
+        metadata_json = None
+        if metadata:
+            metadata_json = _get_metadata(results)
+
+        count_value = None
+        if count:
+            count_value = results[0]["info"]["rowCount"]
+
+        return _get_rds_results(results, metadata_json, count_value)
 
     def tabulate(
         self,
         dims=None,
-        measure=["count(*)"],
+        measure=None,
         where=None,
         orderby=None,
+        groupby=None,
         weights=None,
         totals=False,
-        include_metadata=True,
+        metadata=True,
         inject=False,
+        count=False,
+        rds_format=None,
     ):
         """
         Queries the data product for a set of tabulated records.
@@ -154,14 +167,20 @@ class DataProduct:
             filtering by comparative and conjunctive operators. The default is None.
         orderby : list of str, optional
             orders the records by one or more columns. The default is None.
+        groupby : list of str, optional
+            groups the records by one or more columns. The default is None.
         weights : list of str, optional
             columns to be weighed. The default is None.
         totals : bool, optional
             flag for if the totals should be returned with the data frame. The default is False.
-        include_metadata : bool, optional
+        metadata : bool, optional
             flag for if metadata should be used/returned with the data frame. The default is True.
         inject : bool, optional
             flag for if the code labels should be used over the code values. The default is False.
+        count : bool, optional
+            flag for returning the record count in the info. The default is False.
+        rds_format : string, optional
+            the format of the json object returned. The default is mtna_simple.
 
         Returns
         -------
@@ -174,19 +193,25 @@ class DataProduct:
         params.update(self._get_param(measure, "measure"))
         params.update(self._get_param(where, "where"))
         params.update(self._get_param(orderby, "orderby"))
+        params.update(self._get_param(groupby, "groupby"))
         params.update(self._get_param(weights, "weights"))
-        params.update(self._get_param([str(include_metadata).lower()], "metadata"))
-        params.update(self._get_param([str(inject).lower()], "inject"))
-        params.update(self._get_param([str(totals).lower()], "totals"))
+        params.update(self._get_param(rds_format, "format"))
+        params.update(self._get_param(str(metadata).lower(), "metadata"))
+        params.update(self._get_param(str(inject).lower(), "inject"))
+        params.update(self._get_param(str(totals).lower(), "totals"))
+        params.update(self._get_param(str(count).lower(), "count"))
 
-        results = self._batch(api_call, params)
-        self.param_delim = ""
+        results = [_query(api_call, params)]
 
-        metadata = None
-        if include_metadata:
-            metadata = _get_metadata(results)
+        metadata_json = None
+        if metadata:
+            metadata_json = _get_metadata(results)
 
-        return _get_rds_results(results, metadata, dims + measure)
+        count_value = None
+        if count:
+            count_value = results[0]["info"]["rowCount"]
+
+        return _get_rds_results(results, metadata_json, count_value)
 
     def get_variable(self, variable=None):
         """
@@ -261,14 +286,7 @@ class DataProduct:
         params = {}
         params.update(self._get_param(limit, "limit"))
 
-        # must use different methods depending on python version 3.X vs 2.X
-        if sys.version_info > (3, 0):
-            api_call += urllib.parse.urlencode(params)
-        else:
-            api_call += urllib.urlencode(params)
-
-        response = get_response(api_call)
-        return json.load(response)
+        return _query(api_call, params)
 
     def profile(self, variable):
         """
@@ -305,6 +323,23 @@ class DataProduct:
         response = get_response(api_call)
         return json.load(response)
 
+    def _get_column_count(self, cols, collimit):
+        col_count = None
+        if cols == None:
+            col_count_api_call = self._get_url("query") + "/select?"
+            col_count_params = {}
+            col_count_params.update(self._get_param(1, "limit"))
+
+            col_count_results = _query(col_count_api_call, col_count_params)
+            col_count = len(col_count_results["records"][0])
+        else:
+            col_count = len(cols)
+            
+        if collimit == None:
+            return col_count
+        else:
+            return col_count if col_count < collimit else collimit
+
     def _get_url(self, endpoint):
         if self.catalog_id is None:
             raise ValueError("Catalog ID must be specified")
@@ -337,32 +372,25 @@ class DataProduct:
         else:
             return {}
 
-    def _batch(self, api_call, params, limit=10000, offset=0):
+    def _batch(self, api_call, params, max_records, limit, offset=0):
         results = []
 
         first_pass = True
         more_rows = True
-        while (first_pass or more_rows) and limit > 0:
+        while (first_pass or more_rows) and max_records > 0:
             first_pass = False
             api_call_copy = api_call
             params.update(self._get_param(offset, "offset"))
 
-            if limit > 500:
-                params.update(self._get_param(500, "limit"))
-                offset += 500
-                limit -= 500
-            else:
+            if max_records > limit:
                 params.update(self._get_param(limit, "limit"))
-                limit = 0
-
-            # must use different methods depending on python version 3.X vs 2.X
-            if sys.version_info > (3, 0):
-                api_call_copy += urllib.parse.urlencode(params)
+                offset += limit
+                max_records -= limit
             else:
-                api_call_copy += urllib.urlencode(params)
+                params.update(self._get_param(max_records, "limit"))
+                max_records = 0
 
-            response = get_response(api_call_copy)
-            result = json.load(response)
+            result = _query(api_call_copy, params)
             results.append(result)
 
             more_rows = result["info"]["moreRows"]
@@ -373,10 +401,12 @@ class DataProduct:
 class RdsResults:
     """A wrapper object that binds the records, the column names, and metadata on the columns together."""
 
-    def __init__(self, records, columns, metadata):
+    def __init__(self, records, columns, metadata, totals=None, count=None):
         self.records = records
         self.columns = columns
         self.metadata = metadata
+        self.totals = totals
+        self.count = count
 
 
 def _get_metadata(results):
@@ -388,24 +418,44 @@ def _get_metadata(results):
                 var_name = variable["label"]
             except KeyError:
                 var_name = variable["name"]
-            
+
             metadata[var_name] = variable
-    
+
     return metadata
 
 
-def _get_rds_results(results, metadata, columns):
-    col_names = []
-    if metadata is not None:
-        for var_name in metadata.keys():
-            col_names.append(var_name)
+def _query(api_call, params):
+    if sys.version_info > (3, 0):
+        import urllib.parse
+
+        api_call += urllib.parse.urlencode(params)
     else:
-        for column in columns:
-            col_names.append(column)
+        import urllib
+
+        api_call += urllib.urlencode(params)
+
+    response = get_response(api_call)
+    return json.load(response)
+
+
+def _get_rds_results(results, metadata_json, count):
+    col_names = None
+    metadata = None
+    if metadata_json is not None:
+        col_names = []
+        for var_name in metadata_json.keys():
+            col_names.append(var_name)
+        metadata = list(metadata_json.values())
 
     records = []
+    totals = None
     for result in results:
         for record in result["records"]:
             records.append(record)
+        if result["totals"] != None and result["totals"] != []:
+            if totals == None:
+                totals = []
+            for total in result["totals"]:
+                totals.append(total)
 
-    return RdsResults(records, col_names, list(metadata.values()))
+    return RdsResults(records, col_names, metadata, totals, count)

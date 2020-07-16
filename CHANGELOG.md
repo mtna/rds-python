@@ -1,3 +1,19 @@
+# v0.2.2 (2020-7-16)
+Parameters modified and new ones added. Bugs fixed and tests created.
+## Added
+- `rds_format` parameter to select and tabulate queries, changes json output format
+- `count` parameter to select and tabulate queries, returns row count
+- `groupby` parameter to tabulate query
+- returned RdsResults now has `count` and `totals` attributes
+## Changed
+- `include_metadata` parameter changed to `metadata`
+- `limit` parameter default changed from 1000 to 20
+- `measure` tabulate parameter default changed from count(*) to None
+## Fixed
+- query batching accounting for 10000 cell limit as opposed to row limit
+## Removed
+- batching queries in a tabulate query
+
 # v0.2.14 (2020-7-08)
 Modifying query parameters.
 ## Added
