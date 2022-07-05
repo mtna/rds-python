@@ -12,6 +12,7 @@ import math
 from .utility import get_response, check_valid
 
 
+#TODO pass api key to util methods
 class DataProduct:
     """
     Holds information to connect to a data product and allows methods for querying it.
@@ -26,13 +27,14 @@ class DataProduct:
         ID of the data product. Default is None
     """
 
-    def __init__(self, api, catalog_id, dataproduct_id):
+    def __init__(self, api, api_key, catalog_id, dataproduct_id):
         metadata = check_valid(
             api + "/api/catalog/" + catalog_id + "/" + dataproduct_id,
-            "Invalid dataproduct ID",
+            api_key, "Invalid dataproduct ID",
             is_json=True,
         )
         self.api = api
+        self.api_key = api_key
         self.catalog_id = catalog_id
         self.dataproduct_id = dataproduct_id
         self.name = metadata["name"]
@@ -51,7 +53,7 @@ class DataProduct:
 
         """
         api_call = self._get_url("query") + "/count"
-        response = get_response(api_call)
+        response = get_response(api_call, self.api_key)
         return json.load(response)
 
     def select(
@@ -201,7 +203,7 @@ class DataProduct:
         params.update(self._get_param(str(totals).lower(), "totals"))
         params.update(self._get_param(str(count).lower(), "count"))
 
-        results = [_query(api_call, params)]
+        results = [_query(api_call, self.api_key, params)]
 
         metadata_json = None
         if metadata:
@@ -235,7 +237,7 @@ class DataProduct:
         else:
             api_call += "/variable/" + variable
 
-        response = get_response(api_call)
+        response = get_response(api_call, self.api_key)
         return json.load(response)
 
     def get_classification(self, classification=None):
@@ -260,7 +262,7 @@ class DataProduct:
         else:
             api_call += "/classification/" + classification
 
-        response = get_response(api_call)
+        response = get_response(api_call, self.api_key)
         return json.load(response)
 
     def get_code(self, classification, limit=20):
@@ -286,7 +288,7 @@ class DataProduct:
         params = {}
         params.update(self._get_param(limit, "limit"))
 
-        return _query(api_call, params)
+        return _query(api_call, self.api_key, params)
 
     def profile(self, variable):
         """
@@ -305,7 +307,7 @@ class DataProduct:
         """
         api_call = self._get_url("catalog") + "/variables/profile?cols=" + variable
 
-        response = get_response(api_call)
+        response = get_response(api_call, self.api_key)
         return json.load(response)
 
     def get_metadata(self):
@@ -320,7 +322,7 @@ class DataProduct:
         """
         api_call = self._get_url("catalog")
 
-        response = get_response(api_call)
+        response = get_response(api_call, self.api_key)
         return json.load(response)
 
     def _get_column_count(self, cols, collimit):
@@ -330,7 +332,7 @@ class DataProduct:
             col_count_params = {}
             col_count_params.update(self._get_param(1, "limit"))
 
-            col_count_results = _query(col_count_api_call, col_count_params)
+            col_count_results = _query(col_count_api_call, self.api_key, col_count_params)
             col_count = len(col_count_results["records"][0])
         else:
             col_count = len(cols)
@@ -394,7 +396,7 @@ class DataProduct:
                     params.update(self._get_param(max_records, "limit"))
                     max_records = 0
 
-            result = _query(api_call_copy, params)
+            result = _query(api_call_copy, self.api_key, params)
             results.append(result)
 
             more_rows = result["info"]["moreRows"]
@@ -428,7 +430,7 @@ def _get_metadata(results):
     return metadata
 
 
-def _query(api_call, params):
+def _query(api_call, api_key, params):
     if sys.version_info > (3, 0):
         import urllib.parse
 
@@ -438,7 +440,7 @@ def _query(api_call, params):
 
         api_call += urllib.urlencode(params)
 
-    response = get_response(api_call)
+    response = get_response(api_call, api_key)
     return json.load(response)
 
 

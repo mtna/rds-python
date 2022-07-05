@@ -9,6 +9,7 @@ from .dataproduct import DataProduct
 from .utility import get_response, check_valid
 
 
+#TODO pass api key to util methods
 class Catalog:
     """
     Holds information to connect to a catalog and allows access to its data products.
@@ -21,14 +22,15 @@ class Catalog:
         ID of the catalog, required
     """
 
-    def __init__(self, api, catalog_id):
+    def __init__(self, api, api_key, catalog_id):
         metadata = check_valid(
-            api + "/api/catalog/" + catalog_id, "Invalid catalog ID", is_json=True
+            api + "/api/catalog/" + catalog_id, api_key, "Invalid catalog ID", is_json=True
         )
         self.api = api
+        self.api_key = api_key
         self.catalog_id = catalog_id
         self.name = metadata["name"]
-        self.description = metadata["description"]
+        self.description = metadata["description"] if "description" in metadata else None
         self.uri = metadata["uri"]
         # itll look itself up to make sure the ID exists and itll fill its description and name
 
@@ -46,7 +48,7 @@ class Catalog:
         DataProduct
             An object that can retrieve data and metadata from RDS.
         """
-        return DataProduct(self.api, self.catalog_id, dataproduct_id)
+        return DataProduct(self.api, self.api_key, self.catalog_id, dataproduct_id)
 
     def get_metadata(self):
         """
@@ -59,5 +61,5 @@ class Catalog:
         """
         api_call = self.api + "/api/catalog/" + self.catalog_id
 
-        response = get_response(api_call)
+        response = get_response(api_call, self.api_key)
         return json.load(response)

@@ -10,6 +10,7 @@ from .catalog import Catalog
 from .utility import get_response
 
 
+#TODO pass api key to util methods
 class Server:
     """
     Holds information to connect to a server hosting Rich Data Services (RDS).
@@ -26,7 +27,7 @@ class Server:
         The port, defaults to None
     """
 
-    def __init__(self, domain, protocol="https", path="/rds", port=None):
+    def __init__(self, domain, protocol="https", path="/rds", port=None, api_key=None):
         api = domain
         if "http" not in domain:
             api = protocol + "://" + api
@@ -37,6 +38,7 @@ class Server:
             api += path
 
         self.api = api
+        self.api_key = api_key
 
     def get_catalog(self, catalog_id):
         """
@@ -52,7 +54,7 @@ class Server:
         Catalog
             An object that contains data products and catalog properties.
         """
-        return Catalog(self.api, catalog_id)
+        return Catalog(self.api, self.api_key, catalog_id)
 
     def get_root_catalog(self):
         """
@@ -63,7 +65,7 @@ class Server:
         JSON
             The root catalog.
         """
-        return json.load(get_response(self.api + "/api/catalog"))
+        return json.load(get_response(self.api + "/api/catalog", self.api_key))
 
     def get_changelog(self):
         """
@@ -75,7 +77,7 @@ class Server:
             The changelog.
 
         """
-        return json.load(get_response(self.api + "/api/server/info"))
+        return json.load(get_response(self.api + "/api/server/info", self.api_key))
 
     def get_info(self):
         """
@@ -87,4 +89,4 @@ class Server:
             Server information.
 
         """
-        return json.load(get_response(self.api + "/api/server/changelog"))
+        return json.load(get_response(self.api + "/api/server/changelog", self.api_key))

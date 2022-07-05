@@ -24,9 +24,8 @@ RDS greatly simplifies the long process finding the data to begin with, cleaning
 - [License](#license)  
     
 ## Announcements
-### Version v0.2.16 released
-This version of **RDS** Python allows you to take advantage of our powerful database framework through its select queries, tabulation queries, and metadata retrieval. All features for our query system are available through this python API.  
-{release date}
+### Version v0.2.18 released
+This version of **RDS** Python has added the feature of using an API key when connecting to an instance of RDS.
 
 ## Installation
 ### Using pip
@@ -45,7 +44,7 @@ Imagine that you would like to get some demographic data in the United State. Yo
 ```python
 from rds import Server
 
-server = Server("domain")
+server = Server("domain", "api_key")
 catalog = server.get_catalog("catalog_id")
 dataproduct = catalog.get_dataproduct("dataproduct_id")
 ```
@@ -72,7 +71,7 @@ A tabulation query is used almost identically to a select query, except it uses 
 
 If you wanted to know the amount of male/females for each race in the census, you would perform the below tabulation query.
 ```python
-results = dataproduct.select(dims=["sex", "race"], measure=["count(*)"], orderby=["race"], inject=True)
+results = dataproduct.tabulate(dims=["sex", "race"], measure=["count(*)"], orderby=["race"], inject=True)
 ```
 
 You can think of the parameter `dims` as the dimension of a tabulation table, and the parameter `measure` as the value that you want in each cell of the table. One thing you may notice that is new is the `inject` parameter. This signifies that we want to replace any "coded" values with their more readable labels. Sex can be an example of a "coded" value as many times the data is coded as "1" to refer to male and a "2" to refer to female. Since "1" and "2" would not be very descriptive in a chart, **RDS** gives you the ability to replace them with what the codes actually mean.

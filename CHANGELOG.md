@@ -1,3 +1,7 @@
+# v0.2.18 (2022-7-1)
+## Added
+- `api_key` parameter to Server class, allows connecting to secure RDS host.
+
 # v0.2.16 (2020-7-16)
 ## Changed
 - limit defaults to `None` instead of 20
